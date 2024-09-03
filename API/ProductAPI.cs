@@ -77,8 +77,8 @@ namespace Bangazon.API
                 }
             });
 
-            //Patch a Product
-            app.MapPatch("/products/{id}", (BangazonDbContext db, IMapper mapper, int id, ProductDTO updatedProductDto) =>
+            //Put a Product
+            app.MapPut("/products/{id}", (BangazonDbContext db, IMapper mapper, int id, ProductDTO updatedProductDto) =>
             {
                 var product = db.Products.FirstOrDefault(p => p.ProductId == id);
 
