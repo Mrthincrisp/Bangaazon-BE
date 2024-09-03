@@ -66,6 +66,22 @@ namespace Bangazon.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Bangazon.Models.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
             modelBuilder.Entity("Bangazon.Models.OrderItem", b =>
                 {
                     b.Property<int>("OrderItemId")
@@ -107,6 +123,39 @@ namespace Bangazon.Migrations
                             ProductId = 1,
                             UserId = 1
                         });
+                });
+
+            modelBuilder.Entity("Bangazon.Models.OrderProducts", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal?>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ProductNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SellerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SellerName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderProducts");
                 });
 
             modelBuilder.Entity("Bangazon.Models.Product", b =>
@@ -155,7 +204,7 @@ namespace Bangazon.Migrations
                             ProductId = 1,
                             CategoryId = 4,
                             Description = "A new and universally fitting blinker bulb",
-                            ImageUrl = "this is the image of a small bulb",
+                            ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9F9dbIleMgaQn1Ss-CGcX_i1SXN1Av8EmHw&s",
                             Name = "Blinker bulb",
                             Price = 7.99m,
                             Quantity = 10,
@@ -167,7 +216,7 @@ namespace Bangazon.Migrations
                             ProductId = 2,
                             CategoryId = 1,
                             Description = "Premium synthetic engine oil for all vehicles",
-                            ImageUrl = "this is the image of an oil bottle",
+                            ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnw1Rsm0jsi34mKiOieNRQ1cmWm1ZgTmWTwQ&s",
                             Name = "Car Engine Oil",
                             Price = 29.99m,
                             Quantity = 25,
@@ -179,7 +228,7 @@ namespace Bangazon.Migrations
                             ProductId = 3,
                             CategoryId = 3,
                             Description = "Durable all-season tire suitable for all terrains",
-                            ImageUrl = "this is the image of a tire",
+                            ImageUrl = "https://the-antiqueology.myshopify.com/cdn/shop/products/image_fe749231-26a4-4eeb-86d8-ec7980874775.jpg?v=1660339348&width=1445",
                             Name = "All-Season Tire",
                             Price = 99.99m,
                             Quantity = 15,
@@ -191,7 +240,7 @@ namespace Bangazon.Migrations
                             ProductId = 4,
                             CategoryId = 2,
                             Description = "Long-lasting vehicle battery with extended warranty",
-                            ImageUrl = "this is the image of a battery",
+                            ImageUrl = "https://greentumble.com/wp-content/uploads/2016/12/How-To-Produce-Electricity-From-A-Potato.jpg",
                             Name = "Vehicle Battery",
                             Price = 79.99m,
                             Quantity = 20,
@@ -203,7 +252,7 @@ namespace Bangazon.Migrations
                             ProductId = 5,
                             CategoryId = 4,
                             Description = "Energy-efficient LED headlight bulb for better visibility",
-                            ImageUrl = "this is the image of an LED bulb",
+                            ImageUrl = "https://cdn.sealite.com/wp-content/uploads/20201114143005/universal-led-controller-e1592894075755.jpg",
                             Name = "LED Headlight Bulb",
                             Price = 14.99m,
                             Quantity = 30,
@@ -215,7 +264,7 @@ namespace Bangazon.Migrations
                             ProductId = 6,
                             CategoryId = 5,
                             Description = "Aromatic air freshener for a pleasant driving experience",
-                            ImageUrl = "this is the image of an air freshener",
+                            ImageUrl = "https://s3.amazonaws.com/production.mediajoint.prx.org/public/piece_images/709800/ScratchSniffPodcast_Logo_Orange-02_square.png",
                             Name = "Car Air Freshener",
                             Price = 4.99m,
                             Quantity = 50,
@@ -283,7 +332,7 @@ namespace Bangazon.Migrations
                     b.HasOne("Bangazon.Models.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Bangazon.Models.User", "User")
@@ -297,24 +346,33 @@ namespace Bangazon.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Bangazon.Models.OrderProducts", b =>
+                {
+                    b.HasOne("Bangazon.Models.Order", null)
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId");
+                });
+
             modelBuilder.Entity("Bangazon.Models.Product", b =>
                 {
-                    b.HasOne("Bangazon.Models.Category", null)
-                        .WithMany("Products")
+                    b.HasOne("Bangazon.Models.Category", "Category")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Bangazon.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Products")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Category");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Bangazon.Models.Category", b =>
+            modelBuilder.Entity("Bangazon.Models.Order", b =>
                 {
                     b.Navigation("Products");
                 });
@@ -327,6 +385,8 @@ namespace Bangazon.Migrations
             modelBuilder.Entity("Bangazon.Models.User", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

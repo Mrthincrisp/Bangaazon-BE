@@ -59,6 +59,23 @@ namespace Bangazon.API
 
             });
 
+            //delete all OrderItems of a user
+            app.MapDelete("orderItem/all/{userid}", async (BangazonDbContext db, int userId) =>
+            {
+                var orderItemsToDelete = await db.OrderItems.Where(oi => oi.UserId == userId).ToListAsync();
+
+            if (orderItemsToDelete == null)
+                {
+                    return Results.NotFound("orderItems null");
+                }
+
+                db.OrderItems.RemoveRange(orderItemsToDelete);
+                await db.SaveChangesAsync();
+
+                return Results.Ok(new { Message = "All order items deleted." });
+
+            });
+
         }
     }
 }
